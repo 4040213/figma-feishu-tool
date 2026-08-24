@@ -1,0 +1,2417 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <style>
+    body {
+      font-family: sans-serif;
+      width: 400px;
+      padding: 16px;
+      box-sizing: border-box;
+      color: #222;
+    }
+
+    h2 {
+      font-size: 16px;
+      margin: 0 0 12px;
+    }
+
+    p {
+      font-size: 12px;
+      line-height: 1.5;
+      color: #666;
+      margin: 8px 0;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      margin-top: 12px;
+      color: #444;
+    }
+
+    input,
+    select,
+    textarea,
+    button {
+      width: 100%;
+      box-sizing: border-box;
+      margin-top: 6px;
+      font-size: 13px;
+    }
+
+    input,
+    select,
+    textarea {
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+    }
+
+    textarea {
+      height: 90px;
+      resize: vertical;
+      font-family: Consolas, monospace;
+    }
+
+    button {
+      margin-top: 18px;
+      padding: 11px;
+      border: none;
+      border-radius: 8px;
+      background: #18a0fb;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #0d8de3;
+    }
+
+    button:disabled {
+      background: #b8c2cc;
+      cursor: not-allowed;
+    }
+
+    .row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .row > div {
+      flex: 1;
+    }
+
+    .box {
+      margin-top: 12px;
+      padding: 10px;
+      border: 1px solid #eee;
+      border-radius: 8px;
+      background: #fafafa;
+    }
+
+    .box h3 {
+      font-size: 13px;
+      margin: 0 0 8px;
+    }
+
+    .status {
+      font-size: 12px;
+      color: #444;
+      margin-top: 8px;
+      line-height: 1.5;
+    }
+
+    .tip {
+      background: #f5f5f5;
+      padding: 10px;
+      border-radius: 8px;
+      margin-top: 12px;
+    }
+
+    .morton-result {
+      margin-top: 8px;
+      max-height: 180px;
+      overflow: auto;
+      padding: 8px;
+      border-radius: 8px;
+      background: #f8fafc;
+      border: 1px solid #e5e7eb;
+      font-size: 11px;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    .muted {
+      color: #777;
+      font-size: 11px;
+    }
+
+    .workflow-intro {
+      margin: -4px 0 14px;
+    }
+
+    .step-card {
+      margin-top: 12px;
+      padding: 12px;
+      border: 1px solid #dfe7ef;
+      border-radius: 10px;
+      background: #fff;
+    }
+
+    .step-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .step-index {
+      display: inline-flex;
+      width: 22px;
+      height: 22px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: #18a0fb;
+      color: #fff;
+      font-size: 12px;
+    }
+
+    .hint {
+      margin-top: 6px;
+      color: #777;
+      font-size: 11px;
+      line-height: 1.5;
+    }
+
+    details.fold {
+      margin-top: 12px;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      background: #fafafa;
+    }
+
+    details.fold > summary {
+      padding: 11px 12px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 700;
+      color: #444;
+      user-select: none;
+    }
+
+    .fold-content {
+      padding: 0 12px 12px;
+      border-top: 1px solid #eee;
+    }
+
+    .advanced-section {
+      margin-top: 14px;
+      padding-top: 2px;
+    }
+
+    .advanced-section h3 {
+      margin: 8px 0 0;
+      font-size: 13px;
+    }
+
+    #generateBtn {
+      margin-top: 10px;
+    }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 12px;
+      cursor: pointer;
+      font-size: 12px;
+      color: #444;
+    }
+
+    .toggle-row input[type="checkbox"] {
+      width: auto;
+      margin: 0;
+    }
+
+    .quick-field-row {
+      display: grid;
+      grid-template-columns: 42px 1fr 58px;
+      gap: 8px;
+      align-items: center;
+      margin-top: 8px;
+    }
+
+    .quick-field-row label,
+    .quick-field-row textarea,
+    .quick-field-row button {
+      margin-top: 0;
+    }
+
+    .quick-field-row textarea {
+      height: 38px;
+      min-height: 38px;
+      padding: 8px;
+      font-family: sans-serif;
+    }
+
+    .quick-field-row.question-row textarea {
+      height: 58px;
+    }
+
+    .quick-field-row button {
+      padding: 9px 6px;
+      border-radius: 6px;
+      font-size: 12px;
+    }
+
+    .mode-switch {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .mode-switch button {
+      margin-top: 0;
+      background: #f3f6f8;
+      color: #44515c;
+      border: 1px solid #d6dee5;
+    }
+
+    .mode-switch button.active {
+      background: #18a0fb;
+      color: #fff;
+      border-color: #18a0fb;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+  <h2>题目图片批量生成</h2>
+  <p class="workflow-intro" id="workflowIntro">请先选择生成方式，之后可随时切换。</p>
+
+  <section class="step-card">
+    <div class="step-title">选择生成方式</div>
+    <div class="mode-switch">
+      <button type="button" data-generation-mode="single">单题生成</button>
+      <button type="button" data-generation-mode="document">文档生成</button>
+    </div>
+  </section>
+
+  <section class="step-card" id="inputSourceStep" hidden>
+    <div class="step-title">
+      <span class="step-index">1</span>
+      内容输入
+    </div>
+
+    <div id="singleQuestionPanel" hidden>
+    <label>快速单题输入</label>
+    <div class="quick-field-row question-row">
+      <label for="quickQuestion">题干</label>
+      <textarea id="quickQuestion" placeholder="输入题干"></textarea>
+      <button type="button" data-quick-generate="Question">生成</button>
+    </div>
+    <div class="quick-field-row">
+      <label for="quickOptionA">选项 A</label>
+      <textarea id="quickOptionA" placeholder="输入 A 的内容"></textarea>
+      <button type="button" data-quick-generate="A">生成</button>
+    </div>
+    <div class="quick-field-row">
+      <label for="quickOptionB">选项 B</label>
+      <textarea id="quickOptionB" placeholder="输入 B 的内容"></textarea>
+      <button type="button" data-quick-generate="B">生成</button>
+    </div>
+    <div class="quick-field-row">
+      <label for="quickOptionC">选项 C</label>
+      <textarea id="quickOptionC" placeholder="输入 C 的内容"></textarea>
+      <button type="button" data-quick-generate="C">生成</button>
+    </div>
+    <div class="quick-field-row">
+      <label for="quickOptionD">选项 D</label>
+      <textarea id="quickOptionD" placeholder="输入 D 的内容"></textarea>
+      <button type="button" data-quick-generate="D">生成</button>
+    </div>
+    <div class="quick-field-row question-row">
+      <label for="quickLightbulb">小灯泡</label>
+      <textarea id="quickLightbulb" placeholder="输入小灯泡内容；多条可用 1.、2. 编号"></textarea>
+      <button type="button" data-quick-generate="Lightbulb">生成</button>
+    </div>
+    <div class="quick-field-row question-row">
+      <label for="quickNegativeFeedback">负反馈</label>
+      <textarea id="quickNegativeFeedback" placeholder="输入负反馈内容；多条可用 1.、2. 编号"></textarea>
+      <button type="button" data-quick-generate="NegativeFeedback">生成</button>
+    </div>
+    <button id="generateQuickQuestionBtn" type="button">生成整题</button>
+    <div id="quickGenerateStatus" class="status">题干、选项、小灯泡和负反馈均可单独生成，也可一次生成整题。</div>
+    </div>
+
+    <div id="documentGenerationPanel" hidden>
+    <label>Word 文档</label>
+    <input id="wordFile" type="file" accept=".docx" />
+
+    <label>文档命名前缀</label>
+    <input id="wordBasePrefix" type="text" value="" placeholder="选择文档后自动使用文档名称" />
+    <div class="hint">默认使用不含 .docx 的文档名称，可按需修改。</div>
+
+    <div id="wordExtractStatus" class="status">
+      请选择 Word 文档，选择后会自动解析。
+    </div>
+    <div class="hint">Word 中人工设置为斜体的字母或数字会优先按 Times New Roman Italic 生成；字体颜色不作为斜体标记。</div>
+    </div>
+  </section>
+
+  <details class="fold" id="csvPreviewFold" hidden>
+    <summary>查看或修改解析结果（CSV）</summary>
+    <div class="fold-content">
+      <label>导入已有 CSV 文件</label>
+      <input id="csvFile" type="file" accept=".csv,.txt" />
+
+      <label>CSV 预览 / 手动输入</label>
+      <textarea id="manualCsv" placeholder="Word 解析完成后会自动显示在这里"></textarea>
+      <div class="hint">CSV 是内部中间数据。通常无需修改；仅在解析结果需要人工纠正时展开。</div>
+    </div>
+  </details>
+
+  <section class="step-card" id="generationSettings" hidden>
+    <div class="step-title">
+      <span class="step-index">2</span>
+      生成题干与选项图片
+    </div>
+    <div class="row">
+      <div>
+        <label>选项宽度模式</label>
+        <select id="optionWidthMode">
+          <option value="auto" selected>自动（完整单行）</option>
+          <option value="manual">手动设置</option>
+        </select>
+      </div>
+      <div>
+        <label>手动宽度（px）</label>
+        <input id="optionWidth" type="number" value="320" min="80" step="1" disabled />
+      </div>
+    </div>
+    <div class="hint">自动模式按最长选项扩展，同一道题的选项保持等宽；手动模式按指定宽度排版，内容过长时自动换行。</div>
+    <label class="toggle-row">
+      <input id="questionBackground" type="checkbox" />
+      显示题干背景
+    </label>
+    <div id="documentGenerateActions" hidden>
+      <div id="generateReadyStatus" class="status">尚未解析题目。</div>
+      <button id="generateBtn" disabled>生成题干与选项图层</button>
+    </div>
+  </section>
+
+  <details class="fold" id="advancedSettings" hidden>
+    <summary>高级设置</summary>
+    <div class="fold-content">
+      <div class="advanced-section">
+        <h3>其他数据来源与命名</h3>
+
+        <label>统一命名前缀</label>
+        <input
+          id="namePrefix"
+          type="text"
+          value=""
+          placeholder="可选：如 26sug1w1d1p1-1"
+        />
+        <div class="hint">示例：26sug1w1d1p1-1-option-D、26sug1w1d1p1-1-text-D</div>
+
+        <label>飞书文档链接</label>
+        <input id="feishuDocUrl" type="text" placeholder="粘贴飞书 wiki/docx/docs 链接" />
+
+        <label>飞书命名前缀基础部分</label>
+        <input id="feishuBasePrefix" type="text" value="26SUG6W18" />
+
+        <label>飞书 App ID</label>
+        <input id="feishuAppId" type="text" placeholder="粘贴飞书开放平台 App ID" />
+
+        <label>飞书 App Secret</label>
+        <input id="feishuAppSecret" type="password" placeholder="粘贴飞书开放平台 App Secret" />
+
+        <button id="extractFeishuBtn" type="button">从飞书文档解析</button>
+        <div id="feishuExtractStatus" class="status">尚未粘贴飞书文档链接。</div>
+      </div>
+
+      <div class="advanced-section">
+        <h3>选项图片输入</h3>
+        <label>一次性选择多张图片</label>
+        <input id="imageFiles" type="file" accept="image/*" multiple />
+
+        <label>选择整个图片文件夹</label>
+        <input id="imageFolder" type="file" accept="image/*" multiple webkitdirectory />
+        <div id="imageStatus" class="status">尚未选择图片。</div>
+      </div>
+
+      <div class="advanced-section">
+        <h3>布局与字体</h3>
+        <div class="row">
+          <div>
+            <label>每行几个选项</label>
+            <select id="columns">
+              <option value="4">一行 4 个</option>
+              <option value="2">两行 2 个</option>
+            </select>
+          </div>
+          <div>
+            <label>生成几道题</label>
+            <select id="limitRows">
+              <option value="0">全部</option>
+              <option value="1">只生成第 1 组</option>
+            </select>
+          </div>
+        </div>
+
+        <label>选项最小高度</label>
+        <input id="optionHeight" type="number" value="56" min="40" step="1" />
+        <div class="hint">带边框的三种样式中，同一道题全部选项统一高宽；“纯内容”模式按各自文本实际尺寸收缩。</div>
+
+        <div class="row">
+          <div>
+            <label>横向间距</label>
+            <input id="gapX" type="number" value="28" />
+          </div>
+          <div>
+            <label>纵向间距</label>
+            <input id="gapY" type="number" value="24" />
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label>题干/选项/反馈字号</label>
+            <input id="fontSize" type="number" value="34" min="12" max="64" step="1" />
+          </div>
+          <div>
+            <label>选项组间距</label>
+            <input id="groupGap" type="number" value="56" />
+          </div>
+        </div>
+
+        <label>空括号宽度（全角字符数）</label>
+        <input id="parenthesisBlankSize" type="number" value="3" min="1" max="10" step="1" />
+
+        <label>选项角标样式</label>
+        <select id="badgeStyle">
+          <option value="vertical" selected>左侧竖条（推荐）</option>
+          <option value="circle">左上圆形</option>
+          <option value="none">无角标</option>
+          <option value="content">纯内容（无边框，背景紧贴内容）</option>
+        </select>
+
+        <label>统一中文字体</label>
+        <input id="fontFamily" type="text" value="FZCuYuan-M03S" />
+        <div class="hint">未展开时以上参数全部使用当前默认值。</div>
+      </div>
+
+      <div class="advanced-section">
+        <h3>莫顿素材库上传</h3>
+        <label>上传模式</label>
+        <select id="mortonUploadMode">
+          <option value="existing">上传到已有文件夹 ID</option>
+          <option value="create">自动创建新文件夹并上传</option>
+        </select>
+
+        <label>新文件夹名称</label>
+        <input id="mortonFolderName" type="text" placeholder="如 26秋G6W2D5选项图" />
+
+        <label>素材文件夹 ID</label>
+        <input id="mortonParentId" type="text" placeholder="如 229969" />
+
+        <label>Authorization</label>
+        <textarea id="mortonAuthorization" placeholder="粘贴请求头里的 Authorization"></textarea>
+
+        <label>Cookie</label>
+        <textarea id="mortonCookie" placeholder="粘贴请求头里的 Cookie"></textarea>
+
+        <button id="uploadMortonBtn" type="button">创建文件夹 / 导出并上传</button>
+        <div id="mortonUploadStatus" class="status">尚未上传。</div>
+        <div id="mortonUploadResult" class="morton-result" style="display:none;"></div>
+      </div>
+    </div>
+  </details>
+
+
+
+  <script>
+    let wordExtractedCsvText = "";
+
+function getElement(id) {
+  return document.getElementById(id);
+}
+
+function csvEscape(value) {
+  const text = String(value || "");
+
+  if (/[",\n]/.test(text)) {
+    return '"' + text.replace(/"/g, '""') + '"';
+  }
+
+  return text;
+}
+
+function rowsToCsv(rows) {
+  const header = [
+    "NamePrefix",
+    "QuestionType",
+    "Question",
+    "A",
+    "B",
+    "C",
+    "D",
+    "Lightbulb",
+    "NegativeFeedback",
+    "QuestionItalic",
+    "AItalic",
+    "BItalic",
+    "CItalic",
+    "DItalic"
+  ];
+
+  const lines = [
+    header.join(",")
+  ];
+
+  for (const row of rows) {
+    lines.push(
+      [
+        row.NamePrefix,
+        row.QuestionType || "",
+        row.Question,
+        row.A,
+        row.B,
+        row.C,
+        row.D,
+        row.Lightbulb || "",
+        row.NegativeFeedback || "",
+        row.QuestionItalic || "",
+        row.AItalic || "",
+        row.BItalic || "",
+        row.CItalic || "",
+        row.DItalic || ""
+      ].map(csvEscape).join(",")
+    );
+  }
+
+  return lines.join("\n");
+}
+
+function extractExplicitItalicMarkup(value) {
+  const text = String(value || "");
+  const pattern = /\[\[i:([\s\S]*?)\]\]/g;
+  const ranges = [];
+  const pieces = [];
+  let cursor = 0;
+  let outputLength = 0;
+  let match;
+
+  while ((match = pattern.exec(text)) !== null) {
+    const before = text.slice(cursor, match.index);
+    pieces.push(before);
+    outputLength += before.length;
+
+    const italicText = match[1];
+    const start = outputLength;
+    pieces.push(italicText);
+    outputLength += italicText.length;
+
+    if (italicText) {
+      ranges.push([start, outputLength]);
+    }
+
+    cursor = match.index + match[0].length;
+  }
+
+  pieces.push(text.slice(cursor));
+
+  return {
+    text: pieces.join(""),
+    ranges
+  };
+}
+
+function addItalicMetadataToRow(row) {
+  const result = { ...row };
+
+  for (const field of ["Question", "A", "B", "C", "D"]) {
+    const parsed = extractExplicitItalicMarkup(result[field]);
+    result[field] = parsed.text;
+    result[`${field}Italic`] = parsed.ranges.length
+      ? JSON.stringify(parsed.ranges)
+      : "";
+  }
+
+  return result;
+}
+
+function findHeaderIndex(headerTexts, names) {
+  return headerTexts.findIndex(function (text) {
+    const normalized = cleanText(text).replace(/\s+/g, "");
+    return names.some(function (name) {
+      return normalized.includes(name);
+    });
+  });
+}
+
+function getSequenceNumber(value) {
+  const match = cleanText(value).match(/(?:^|\D)(\d+)(?:\D|$)/);
+  return match ? Number(match[1]) : 0;
+}
+
+function splitNumberedContent(value) {
+  const text = cleanText(value)
+    .replace(
+      /(?:^|\n)\s*(?:小灯泡|负反馈)\s*(\d+)\s*[：:、.．)]?\s*/g,
+      function (_, sequence) {
+        return `\n${sequence}. `;
+      }
+    )
+    .replace(/^\n/, "")
+    .trim();
+  if (!text) return [];
+
+  const marker = /(?:^|\n)\s*(?:[（(]?\s*(\d+)\s*[）).．、:：]|([①②③④⑤⑥⑦⑧⑨⑩]))\s*/g;
+  const circled = "①②③④⑤⑥⑦⑧⑨⑩";
+  const matches = [];
+  let match;
+
+  while ((match = marker.exec(text)) !== null) {
+    matches.push({
+      index: match.index,
+      contentStart: marker.lastIndex,
+      sequence: match[1] ? Number(match[1]) : circled.indexOf(match[2]) + 1
+    });
+  }
+
+  if (!matches.length) {
+    return [{ sequence: 1, text }];
+  }
+
+  return matches.map(function (item, index) {
+    const end = index + 1 < matches.length ? matches[index + 1].index : text.length;
+    return {
+      sequence: item.sequence,
+      text: text.slice(item.contentStart, end).trim()
+    };
+  }).filter(function (item) {
+    return item.text;
+  });
+}
+
+function isSectionLine(text) {
+  return /^D\d+$/i.test(cleanText(text));
+}
+
+function isPassLine(text) {
+  return /^P\d+\b/i.test(cleanText(text));
+}
+
+function isOptionStartLine(text) {
+  return /^\s*[ABCD]\s*[\.．、\)]/.test(String(text || ""));
+}
+
+function appendFeishuQuestionRow(rows, buffer, context) {
+  const questionText = buffer.join("\n");
+  const content = splitQuestionContent(questionText);
+  const options = content.options;
+  const hasAnyContent =
+    content.question || options.A || options.B || options.C || options.D;
+
+  if (!hasAnyContent) {
+    return false;
+  }
+
+  context.questionNo += 1;
+
+  rows.push(addItalicMetadataToRow({
+    NamePrefix: buildNamePrefix(
+      context.basePrefix,
+      context.section,
+      context.passId,
+      context.questionNo
+    ),
+    QuestionType: /【\s*填空选择\s*】/.test(content.question)
+      ? "填空选择"
+      : "",
+    Question: content.question,
+    A: options.A,
+    B: options.B,
+    C: options.C,
+    D: options.D
+  }));
+
+  return true;
+}
+
+function parseFeishuRawTextToRows(rawText, basePrefix) {
+  const lines = cleanText(rawText)
+    .split("\n")
+    .map(function (line) {
+      return line.trim();
+    })
+    .filter(Boolean);
+
+  const context = {
+    basePrefix,
+    section: "",
+    passId: "",
+    questionNo: 0
+  };
+
+  const rows = [];
+  let buffer = [];
+
+  function flushBuffer() {
+    if (!buffer.length) return;
+    appendFeishuQuestionRow(rows, buffer, context);
+    buffer = [];
+  }
+
+  for (const line of lines) {
+    if (isSectionLine(line)) {
+      flushBuffer();
+      context.section = cleanText(line).toUpperCase();
+      context.passId = "";
+      context.questionNo = 0;
+      continue;
+    }
+
+    if (isPassLine(line)) {
+      flushBuffer();
+      context.passId = normalizePass(line) || "";
+      context.questionNo = 0;
+      continue;
+    }
+
+    if (isOptionStartLine(line)) {
+      const currentOptions = extractOptionsFromQuestionText(buffer.join("\n"));
+      const hasCompleteQuestion =
+        currentOptions.A &&
+        currentOptions.B &&
+        currentOptions.C &&
+        currentOptions.D;
+
+      if (hasCompleteQuestion && /^\s*A\s*[\.．、\)]/i.test(line)) {
+        flushBuffer();
+      }
+    }
+
+    buffer.push(line);
+  }
+
+  flushBuffer();
+
+  return rows;
+}
+
+function extractFeishuLinkToken(url) {
+  const cleanUrl = String(url || "").split("?")[0].replace(/\/+$/, "");
+  const patterns = [
+    {
+      marker: "/wiki/",
+      kind: "wiki"
+    },
+    {
+      marker: "/docx/",
+      kind: "docx"
+    },
+    {
+      marker: "/docs/",
+      kind: "docs"
+    }
+  ];
+
+  for (const pattern of patterns) {
+    const index = cleanUrl.indexOf(pattern.marker);
+
+    if (index >= 0) {
+      const token = cleanUrl
+        .slice(index + pattern.marker.length)
+        .split("/")[0]
+        .trim();
+
+      if (token) {
+        return {
+          kind: pattern.kind,
+          token
+        };
+      }
+    }
+  }
+
+  throw new Error("暂不支持该飞书链接，请使用 wiki / docx / docs 文档链接。");
+}
+
+async function fetchFeishuJson(url, options) {
+  const response = await fetch(url, options);
+  const text = await response.text();
+  let data = null;
+
+  try {
+    data = text ? JSON.parse(text) : null;
+  } catch (error) {
+    throw new Error(`飞书接口返回不是 JSON：HTTP ${response.status} ${text.slice(0, 120)}`);
+  }
+
+  if (!response.ok) {
+    throw new Error(`飞书接口请求失败：HTTP ${response.status} ${data && data.msg ? data.msg : text}`);
+  }
+
+  return data;
+}
+
+async function getFeishuTenantAccessToken(appId, appSecret) {
+  const data = await fetchFeishuJson(
+    "https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json;charset=UTF-8"
+      },
+      body: JSON.stringify({
+        app_id: appId,
+        app_secret: appSecret
+      })
+    }
+  );
+
+  if (!data || data.code !== 0 || !data.tenant_access_token) {
+    throw new Error(`飞书认证失败：${data && data.msg ? data.msg : JSON.stringify(data)}`);
+  }
+
+  return data.tenant_access_token;
+}
+
+async function resolveFeishuDocToken(feishuUrl, tenantAccessToken) {
+  const parsed = extractFeishuLinkToken(feishuUrl);
+
+  if (parsed.kind !== "wiki") {
+    return parsed.token;
+  }
+
+  const data = await fetchFeishuJson(
+    `https://open.feishu.cn/open-apis/wiki/v2/spaces/get_node?token=${encodeURIComponent(parsed.token)}`,
+    {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${tenantAccessToken}`
+      }
+    }
+  );
+
+  if (!data || data.code !== 0 || !data.data || !data.data.node || !data.data.node.obj_token) {
+    throw new Error(`飞书 Wiki 节点获取失败：${data && data.msg ? data.msg : JSON.stringify(data)}`);
+  }
+
+  return data.data.node.obj_token;
+}
+
+async function fetchFeishuRawContentDirect(feishuUrl, appId, appSecret) {
+  const tenantAccessToken = await getFeishuTenantAccessToken(appId, appSecret);
+  const docToken = await resolveFeishuDocToken(feishuUrl, tenantAccessToken);
+  const data = await fetchFeishuJson(
+    `https://open.feishu.cn/open-apis/docx/v1/documents/${encodeURIComponent(docToken)}/raw_content`,
+    {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${tenantAccessToken}`
+      }
+    }
+  );
+
+  if (!data || data.code !== 0 || !data.data || typeof data.data.content !== "string") {
+    throw new Error(`飞书正文读取失败：${data && data.msg ? data.msg : JSON.stringify(data)}`);
+  }
+
+  return data.data.content;
+}
+
+async function fetchFeishuDocumentBlocksDirect(feishuUrl, appId, appSecret) {
+  const tenantAccessToken = await getFeishuTenantAccessToken(appId, appSecret);
+  const docToken = await resolveFeishuDocToken(feishuUrl, tenantAccessToken);
+  const items = [];
+  let pageToken = "";
+
+  do {
+    const query = new URLSearchParams({
+      document_revision_id: "-1",
+      page_size: "500"
+    });
+
+    if (pageToken) {
+      query.set("page_token", pageToken);
+    }
+
+    const data = await fetchFeishuJson(
+      `https://open.feishu.cn/open-apis/docx/v1/documents/${encodeURIComponent(docToken)}/blocks?${query.toString()}`,
+      {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${tenantAccessToken}`
+        }
+      }
+    );
+
+    if (!data || data.code !== 0 || !data.data || !Array.isArray(data.data.items)) {
+      throw new Error(`飞书文档块读取失败：${data && data.msg ? data.msg : JSON.stringify(data)}`);
+    }
+
+    items.push(...data.data.items);
+    pageToken = data.data.has_more ? String(data.data.page_token || "") : "";
+  } while (pageToken);
+
+  return items;
+}
+
+const MORTON_OSS_CONFIG = {
+  uploadUrl: "https://math-thinking.oss-cn-beijing.aliyuncs.com/",
+  cdnPrefix: "//cdn.math-thinking.pipacoding.com/",
+  accessKeyId: "LTAI5tEULykefzDQ8V14MyRu",
+  policy: "eyJleHBpcmF0aW9uIjoiMzAyMC0wMS0wMVQxMjowMDowMC4wMDBaIiwiY29uZGl0aW9ucyI6W1siY29udGVudC1sZW5ndGgtcmFuZ2UiLDAsMTA0ODU3NjAwMF1dfQ==",
+  signature: "n5Brhu0xtJoO2ykjjcnc2wno9u0="
+};
+
+function setMortonStatus(message) {
+  const status = getElement("mortonUploadStatus");
+  if (status) {
+    status.textContent = message;
+  }
+}
+
+function setMortonResult(content) {
+  const result = getElement("mortonUploadResult");
+  if (!result) return;
+
+  result.style.display = content ? "block" : "none";
+  result.textContent = content || "";
+}
+
+function makeMortonRandomId() {
+  if (window.crypto && typeof window.crypto.randomUUID === "function") {
+    return window.crypto.randomUUID();
+  }
+
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (char) {
+    const random = Math.random() * 16 | 0;
+    const value = char === "x" ? random : (random & 0x3 | 0x8);
+    return value.toString(16);
+  });
+}
+
+function makeMortonOssKey(fileName) {
+  const safeName = String(fileName || "figma-option.png")
+    .replace(/[\\/:*?"<>|]/g, "-")
+    .replace(/\s+/g, "-");
+
+  return `morton/IMAGE/${Date.now()}/${makeMortonRandomId()}-${safeName}`;
+}
+
+function bytesToPngFile(bytes, fileName) {
+  const uint8 = new Uint8Array(bytes || []);
+  return new File([uint8], fileName, {
+    type: "image/png"
+  });
+}
+
+async function uploadOneAssetToOss(asset) {
+  const fileName = asset.fileName || `${asset.name}.png`;
+  const key = makeMortonOssKey(fileName);
+  const formData = new FormData();
+
+  formData.append("key", key);
+  formData.append("OSSAccessKeyId", MORTON_OSS_CONFIG.accessKeyId);
+  formData.append("policy", MORTON_OSS_CONFIG.policy);
+  formData.append("Signature", MORTON_OSS_CONFIG.signature);
+  formData.append("file", bytesToPngFile(asset.bytes, fileName), fileName);
+
+  const response = await fetch(MORTON_OSS_CONFIG.uploadUrl, {
+    method: "POST",
+    body: formData
+  });
+
+  if (!response.ok && response.status !== 204) {
+    const text = await response.text().catch(function () {
+      return "";
+    });
+    throw new Error(`OSS 上传失败：${asset.name}，HTTP ${response.status} ${text}`);
+  }
+
+  return {
+    name: asset.name,
+    fileName,
+    key,
+    url: `${MORTON_OSS_CONFIG.cdnPrefix}${key}`
+  };
+}
+
+async function uploadExportedAssetsToMorton(assets) {
+  const parentId = getElement("mortonParentId").value.trim();
+  const authorization = getElement("mortonAuthorization").value.trim();
+  const cookie = getElement("mortonCookie").value.trim();
+
+  if (!parentId) {
+    setMortonStatus("请先填写素材文件夹 ID。");
+    return;
+  }
+
+  if (!authorization || !cookie) {
+    setMortonStatus("请先填写 Authorization 和 Cookie。");
+    return;
+  }
+
+  if (!assets || assets.length === 0) {
+    setMortonStatus("没有可上传的图层。");
+    return;
+  }
+
+  const uploadedRecords = [];
+  setMortonResult("");
+
+  for (let i = 0; i < assets.length; i++) {
+    const asset = assets[i];
+    setMortonStatus(`正在上传 OSS：${i + 1}/${assets.length} ${asset.name}`);
+
+    const uploaded = await uploadOneAssetToOss(asset);
+    uploadedRecords.push(uploaded);
+  }
+
+  setMortonStatus(`OSS 上传完成 ${uploadedRecords.length} 张，正在登记到莫顿素材库...`);
+
+  parent.postMessage({
+    pluginMessage: {
+      type: "register-morton-materials",
+      parentId,
+      authorization,
+      cookie,
+      records: uploadedRecords
+    }
+  }, "*");
+}
+
+function getMortonAuthFields() {
+  return {
+    authorization: getElement("mortonAuthorization").value.trim(),
+    cookie: getElement("mortonCookie").value.trim()
+  };
+}
+
+function startMortonLayerExport() {
+  parent.postMessage({
+    pluginMessage: {
+      type: "export-morton-option-layers"
+    }
+  }, "*");
+}
+
+function startCreateMortonFolder() {
+  const folderName = getElement("mortonFolderName").value.trim();
+  const auth = getMortonAuthFields();
+
+  if (!folderName) {
+    setMortonStatus("请填写新文件夹名称。");
+    return;
+  }
+
+  if (!auth.authorization || !auth.cookie) {
+    setMortonStatus("请先填写 Authorization 和 Cookie。");
+    return;
+  }
+
+  setMortonStatus(`正在创建莫顿素材文件夹：${folderName}`);
+  setMortonResult("");
+
+  parent.postMessage({
+    pluginMessage: {
+      type: "create-morton-folder",
+      folderName,
+      authorization: auth.authorization,
+      cookie: auth.cookie
+    }
+  }, "*");
+}
+
+function cleanText(text) {
+  return String(text || "")
+    .replace(/\u3000/g, " ")
+    .replace(/\u00a0/g, " ")
+    .replace(/\r/g, "\n")
+    .replace(/[ \t]+/g, " ")
+    .replace(/\n+/g, "\n")
+    .trim();
+}
+
+function cleanOptionText(text) {
+  return cleanText(text)
+    .replace(/\n/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function extractOptionsFromQuestionText(questionText) {
+  const text = cleanText(questionText);
+
+  const pattern = /(?:^|\n)\s*([ABCD])\s*[\.．、\)]\s*([\s\S]*?)(?=(?:\n\s*[ABCD]\s*[\.．、\)]\s*)|$)/g;
+
+  const options = {
+    A: "",
+    B: "",
+    C: "",
+    D: ""
+  };
+
+  let match;
+
+  while ((match = pattern.exec(text)) !== null) {
+    const key = match[1].toUpperCase();
+    const value = cleanOptionText(match[2]);
+    options[key] = value;
+  }
+
+  return options;
+}
+
+function splitQuestionContent(questionText) {
+  const text = cleanText(questionText);
+  const firstOption = /(?:^|\n)\s*[ABCD]\s*[\.．、\)]\s*/.exec(text);
+  const question = cleanText(firstOption ? text.slice(0, firstOption.index) : text);
+
+  return {
+    question,
+    options: extractOptionsFromQuestionText(text)
+  };
+}
+
+function buildNamePrefix(basePrefix, section, passId, questionNo) {
+  const safeSection = section || "D0";
+  const safePass = passId || "P0";
+
+  return `${basePrefix}${safeSection}${safePass}-${questionNo}`;
+}
+
+function normalizeSection(text) {
+  const clean = cleanText(text);
+
+  if (/^D\d+$/.test(clean)) {
+    return clean;
+  }
+
+  return null;
+}
+
+function normalizePass(text) {
+  const clean = cleanText(text);
+  const match = clean.match(/^(P\d+)\s*(.*)$/);
+
+  if (match) {
+    return match[1];
+  }
+
+  return null;
+}
+
+function elementChildren(node) {
+  return Array.from(node.childNodes).filter(function (child) {
+    return child.nodeType === 1;
+  });
+}
+
+function wordBooleanPropertyIsOn(propertyNode) {
+  if (!propertyNode) return false;
+
+  const wordNamespace =
+    "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
+  const value =
+    propertyNode.getAttributeNS(wordNamespace, "val") ||
+    propertyNode.getAttribute("w:val") ||
+    propertyNode.getAttribute("val");
+
+  return !["0", "false", "off", "none"].includes(
+    String(value || "").toLowerCase()
+  );
+}
+
+function isWordRunItalic(runNode) {
+  const properties = elementChildren(runNode).find(function (child) {
+    return child.localName === "rPr";
+  });
+
+  if (!properties) return false;
+
+  return elementChildren(properties).some(function (child) {
+    return (
+      (child.localName === "i" || child.localName === "iCs") &&
+      wordBooleanPropertyIsOn(child)
+    );
+  });
+}
+
+function getWordRunVerticalAlignment(runNode) {
+  const properties = elementChildren(runNode).find(function (child) {
+    return child.localName === "rPr";
+  });
+
+  if (!properties) return "";
+
+  const verticalAlign = elementChildren(properties).find(function (child) {
+    return child.localName === "vertAlign";
+  });
+
+  if (!verticalAlign) return "";
+
+  const wordNamespace =
+    "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
+  return (
+    verticalAlign.getAttributeNS(wordNamespace, "val") ||
+    verticalAlign.getAttribute("w:val") ||
+    verticalAlign.getAttribute("val") ||
+    ""
+  ).toLowerCase();
+}
+
+function wordRunText(runNode) {
+  const pieces = [];
+
+  function collect(node) {
+    if (node.nodeType !== 1) return;
+
+    if (node.localName === "t") {
+      pieces.push(node.textContent || "");
+      return;
+    }
+
+    if (node.localName === "tab") {
+      pieces.push("\t");
+      return;
+    }
+
+    if (node.localName === "br" || node.localName === "cr") {
+      pieces.push("\n");
+      return;
+    }
+
+    for (const child of node.childNodes) {
+      collect(child);
+    }
+  }
+
+  collect(runNode);
+  return pieces.join("");
+}
+
+function paragraphText(paragraphNode) {
+  const pieces = [];
+
+  function walk(node) {
+    if (node.nodeType !== 1) return;
+
+    if (node.localName === "r") {
+      const value = wordRunText(node);
+      const styledValue =
+        isWordRunItalic(node) && value
+          ? `[[i:${value}]]`
+          : value;
+      const verticalAlignment = getWordRunVerticalAlignment(node);
+
+      if (verticalAlignment === "superscript" && value) {
+        pieces.push(`^{${styledValue}}`);
+      } else if (verticalAlignment === "subscript" && value) {
+        pieces.push(`_{${styledValue}}`);
+      } else {
+        pieces.push(styledValue);
+      }
+      return;
+    }
+
+    if (node.localName === "t") {
+      pieces.push(node.textContent || "");
+      return;
+    }
+
+    if (node.localName === "tab") {
+      pieces.push("\t");
+      return;
+    }
+
+    if (node.localName === "br" || node.localName === "cr") {
+      pieces.push("\n");
+      return;
+    }
+
+    for (const child of node.childNodes) {
+      walk(child);
+    }
+  }
+
+  walk(paragraphNode);
+
+  return pieces.join("");
+}
+
+function exposeItalicOptionPrefix(value) {
+  return String(value || "").replace(
+    /^\[\[i:\s*([ABCD])\s*([.．、\)])([\s\S]*?)\]\]([\s\S]*)$/i,
+    function (match, key, punctuation, italicContent, trailing) {
+      const content = italicContent
+        ? `[[i:${italicContent}]]`
+        : "";
+      return `${key}${punctuation}${content}${trailing}`;
+    }
+  );
+}
+
+function cellText(cellNode) {
+  const paragraphs = [];
+
+  function collect(node) {
+    for (const child of elementChildren(node)) {
+      if (child.localName === "p") {
+        const text = exposeItalicOptionPrefix(
+          paragraphText(child)
+        );
+        if (text.trim()) {
+          paragraphs.push(text);
+        }
+      } else {
+        collect(child);
+      }
+    }
+  }
+
+  collect(cellNode);
+
+  return paragraphs.join("\n");
+}
+
+function getDirectChildrenByLocalName(node, localName) {
+  return elementChildren(node).filter(function (child) {
+    return child.localName === localName;
+  });
+}
+
+function parseQuestionTable(tableNode, context) {
+  const rows = getDirectChildrenByLocalName(tableNode, "tr");
+
+  if (rows.length < 2) {
+    return [];
+  }
+
+  const headerCells = getDirectChildrenByLocalName(rows[0], "tc");
+  const headerTexts = headerCells.map(cellText);
+  const headerTextAll = headerTexts.join("|");
+
+  if (!headerTextAll.includes("题干") || !headerTextAll.includes("答案")) {
+    return [];
+  }
+
+  let questionCellIndex = headerTexts.findIndex(function (text) {
+    return text.includes("题干");
+  });
+
+  if (questionCellIndex < 0) {
+    questionCellIndex = 1;
+  }
+  const questionTypeCellIndex = headerTexts.findIndex(function (text) {
+    return text.includes("题型");
+  });
+  const sequenceCellIndex = findHeaderIndex(headerTexts, ["序号", "编号"]);
+  const lightbulbCellIndex = findHeaderIndex(headerTexts, ["小灯泡"]);
+  const negativeFeedbackCellIndex = findHeaderIndex(headerTexts, ["负反馈"]);
+
+  const resultRows = [];
+
+  for (let i = 1; i < rows.length; i++) {
+    const cells = getDirectChildrenByLocalName(rows[i], "tc");
+
+    if (questionCellIndex >= cells.length) {
+      continue;
+    }
+
+    const questionText = cellText(cells[questionCellIndex]);
+    const content = splitQuestionContent(questionText);
+    const options = content.options;
+    const questionType =
+      questionTypeCellIndex >= 0 &&
+      questionTypeCellIndex < cells.length
+        ? extractExplicitItalicMarkup(
+            cellText(cells[questionTypeCellIndex])
+          ).text.trim()
+        : (
+            /【\s*填空选择\s*】/.test(content.question)
+              ? "填空选择"
+              : ""
+          );
+
+    const lightbulb = lightbulbCellIndex >= 0 && lightbulbCellIndex < cells.length
+      ? cellText(cells[lightbulbCellIndex]).trim()
+      : "";
+    const negativeFeedback =
+      negativeFeedbackCellIndex >= 0 && negativeFeedbackCellIndex < cells.length
+        ? cellText(cells[negativeFeedbackCellIndex]).trim()
+        : "";
+    const hasAnyContent =
+      content.question || options.A || options.B || options.C || options.D ||
+      lightbulb || negativeFeedback;
+
+    if (!hasAnyContent) {
+      continue;
+    }
+
+    const tableSequence =
+      sequenceCellIndex >= 0 && sequenceCellIndex < cells.length
+        ? getSequenceNumber(cellText(cells[sequenceCellIndex]))
+        : 0;
+    context.questionNo = tableSequence || context.questionNo + 1;
+
+    resultRows.push(addItalicMetadataToRow({
+      NamePrefix: buildNamePrefix(
+        context.basePrefix,
+        context.section,
+        context.passId,
+        context.questionNo
+      ),
+      QuestionType: questionType,
+      Question: content.question,
+      A: options.A,
+      B: options.B,
+      C: options.C,
+      D: options.D,
+      Lightbulb: lightbulb,
+      NegativeFeedback: negativeFeedback
+    }));
+  }
+
+  return resultRows;
+}
+
+function getFeishuBlockOwnText(block) {
+  const textTypes = [
+    "text", "heading1", "heading2", "heading3", "heading4", "heading5",
+    "heading6", "heading7", "heading8", "heading9", "bullet", "ordered",
+    "code", "quote", "todo"
+  ];
+
+  for (const type of textTypes) {
+    const content = block && block[type];
+    const elements = content && Array.isArray(content.elements)
+      ? content.elements
+      : [];
+
+    if (elements.length) {
+      return elements.map(function (element) {
+        if (element.text_run) return element.text_run.content || "";
+        if (element.equation) return element.equation.content || "";
+        return "";
+      }).join("");
+    }
+  }
+
+  return "";
+}
+
+function collectFeishuBlockText(blockId, blockMap) {
+  const block = blockMap.get(blockId);
+
+  if (!block) return "";
+
+  const lines = [];
+  const ownText = getFeishuBlockOwnText(block).trim();
+
+  if (ownText) lines.push(ownText);
+
+  for (const childId of block.children || []) {
+    const childText = collectFeishuBlockText(childId, blockMap).trim();
+    if (childText) lines.push(childText);
+  }
+
+  return lines.join("\n");
+}
+
+function parseFeishuBlockTable(tableBlock, blockMap, context) {
+  const table = tableBlock && tableBlock.table;
+  const property = table && table.property;
+  const cellIds = table && Array.isArray(table.cells) ? table.cells : [];
+  const columnCount = Number(property && property.column_size) || 0;
+  const rowCount = Number(property && property.row_size) || 0;
+
+  if (!columnCount || rowCount < 2 || cellIds.length < columnCount * 2) {
+    return [];
+  }
+
+  const matrix = [];
+
+  for (let rowIndex = 0; rowIndex < rowCount; rowIndex++) {
+    const row = [];
+    for (let columnIndex = 0; columnIndex < columnCount; columnIndex++) {
+      const cellId = cellIds[rowIndex * columnCount + columnIndex];
+      row.push(collectFeishuBlockText(cellId, blockMap));
+    }
+    matrix.push(row);
+  }
+
+  const headerTexts = matrix[0];
+  const headerTextAll = headerTexts.join("|");
+
+  if (!headerTextAll.includes("题干") || !headerTextAll.includes("答案")) {
+    return [];
+  }
+
+  const questionCellIndex = findHeaderIndex(headerTexts, ["题干"]);
+  const questionTypeCellIndex = findHeaderIndex(headerTexts, ["题型"]);
+  const sequenceCellIndex = findHeaderIndex(headerTexts, ["序号", "编号"]);
+  const lightbulbCellIndex = findHeaderIndex(headerTexts, ["小灯泡"]);
+  const negativeFeedbackCellIndex = findHeaderIndex(headerTexts, ["负反馈"]);
+  const resultRows = [];
+
+  for (let rowIndex = 1; rowIndex < matrix.length; rowIndex++) {
+    const cells = matrix[rowIndex];
+    const questionText = questionCellIndex >= 0 ? cells[questionCellIndex] || "" : "";
+    const content = splitQuestionContent(questionText);
+    const options = content.options;
+    const lightbulb = lightbulbCellIndex >= 0 ? cells[lightbulbCellIndex] || "" : "";
+    const negativeFeedback =
+      negativeFeedbackCellIndex >= 0 ? cells[negativeFeedbackCellIndex] || "" : "";
+    const hasAnyContent =
+      content.question || options.A || options.B || options.C || options.D ||
+      lightbulb || negativeFeedback;
+
+    if (!hasAnyContent) continue;
+
+    const tableSequence =
+      sequenceCellIndex >= 0 ? getSequenceNumber(cells[sequenceCellIndex]) : 0;
+    context.questionNo = tableSequence || context.questionNo + 1;
+
+    resultRows.push(addItalicMetadataToRow({
+      NamePrefix: buildNamePrefix(
+        context.basePrefix,
+        context.section,
+        context.passId,
+        context.questionNo
+      ),
+      QuestionType:
+        questionTypeCellIndex >= 0
+          ? cleanText(cells[questionTypeCellIndex] || "").trim()
+          : (/【\s*填空选择\s*】/.test(content.question) ? "填空选择" : ""),
+      Question: content.question,
+      A: options.A,
+      B: options.B,
+      C: options.C,
+      D: options.D,
+      Lightbulb: lightbulb.trim(),
+      NegativeFeedback: negativeFeedback.trim()
+    }));
+  }
+
+  return resultRows;
+}
+
+function parseFeishuBlocksToRows(items, basePrefix) {
+  const blockMap = new Map((items || []).map(function (block) {
+    return [block.block_id, block];
+  }));
+  const root = (items || []).find(function (block) {
+    return block.block_type === 1;
+  });
+  const topLevel = root && Array.isArray(root.children)
+    ? root.children.map(function (id) { return blockMap.get(id); }).filter(Boolean)
+    : (items || []);
+  const context = {
+    basePrefix,
+    section: "",
+    passId: "",
+    questionNo: 0
+  };
+  const rows = [];
+
+  for (const block of topLevel) {
+    const text = getFeishuBlockOwnText(block).trim();
+    const section = normalizeSection(text);
+    const passId = normalizePass(text);
+
+    if (section) {
+      context.section = section;
+      context.passId = "";
+      context.questionNo = 0;
+      continue;
+    }
+
+    if (passId) {
+      context.passId = passId;
+      context.questionNo = 0;
+      continue;
+    }
+
+    if (block.table) {
+      rows.push(...parseFeishuBlockTable(block, blockMap, context));
+    }
+  }
+
+  return rows;
+}
+
+function parseDocumentXmlToRows(documentXml, basePrefix) {
+  const parser = new DOMParser();
+  const xmlDoc = parser.parseFromString(documentXml, "application/xml");
+
+  const body = Array.from(xmlDoc.getElementsByTagNameNS(
+    "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+    "body"
+  ))[0];
+
+  if (!body) {
+    throw new Error("没有找到 Word 正文内容。");
+  }
+
+  const context = {
+    basePrefix,
+    section: "",
+    passId: "",
+    questionNo: 0
+  };
+
+  const rows = [];
+
+  for (const child of elementChildren(body)) {
+    if (child.localName === "p") {
+      const text = extractExplicitItalicMarkup(
+        paragraphText(child)
+      ).text.trim();
+
+      if (!text) continue;
+
+      const section = normalizeSection(text);
+
+      if (section) {
+        context.section = section;
+        context.passId = "";
+        context.questionNo = 0;
+        continue;
+      }
+
+      const passId = normalizePass(text);
+
+      if (passId) {
+        context.passId = passId;
+        context.questionNo = 0;
+        continue;
+      }
+    }
+
+    if (child.localName === "tbl") {
+      const tableRows = parseQuestionTable(child, context);
+      rows.push(...tableRows);
+    }
+  }
+
+  return rows;
+}
+
+function findEndOfCentralDirectory(bytes) {
+  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+
+  for (let i = bytes.length - 22; i >= 0; i--) {
+    if (view.getUint32(i, true) === 0x06054b50) {
+      return i;
+    }
+  }
+
+  throw new Error("无法读取 docx：没有找到 ZIP 结束标记。");
+}
+
+async function inflateZipData(data) {
+  if (typeof DecompressionStream === "undefined") {
+    throw new Error("当前 Figma 环境不支持直接解压 docx。需要改用 JSZip 方案。");
+  }
+
+  try {
+    const stream = new Blob([data]).stream().pipeThrough(
+      new DecompressionStream("deflate-raw")
+    );
+
+    const buffer = await new Response(stream).arrayBuffer();
+
+    return new Uint8Array(buffer);
+  } catch (error) {
+    const stream = new Blob([data]).stream().pipeThrough(
+      new DecompressionStream("deflate")
+    );
+
+    const buffer = await new Response(stream).arrayBuffer();
+
+    return new Uint8Array(buffer);
+  }
+}
+
+async function readZipEntry(arrayBuffer, targetName) {
+  const bytes = new Uint8Array(arrayBuffer);
+  const view = new DataView(arrayBuffer);
+
+  const eocdOffset = findEndOfCentralDirectory(bytes);
+
+  const centralDirectorySize = view.getUint32(eocdOffset + 12, true);
+  const centralDirectoryOffset = view.getUint32(eocdOffset + 16, true);
+
+  let offset = centralDirectoryOffset;
+  const end = centralDirectoryOffset + centralDirectorySize;
+
+  const decoder = new TextDecoder("utf-8");
+
+  while (offset < end) {
+    const signature = view.getUint32(offset, true);
+
+    if (signature !== 0x02014b50) {
+      throw new Error("无法读取 docx：中央目录结构异常。");
+    }
+
+    const compressionMethod = view.getUint16(offset + 10, true);
+    const compressedSize = view.getUint32(offset + 20, true);
+    const fileNameLength = view.getUint16(offset + 28, true);
+    const extraLength = view.getUint16(offset + 30, true);
+    const commentLength = view.getUint16(offset + 32, true);
+    const localHeaderOffset = view.getUint32(offset + 42, true);
+
+    const fileNameBytes = bytes.slice(offset + 46, offset + 46 + fileNameLength);
+    const fileName = decoder.decode(fileNameBytes);
+
+    if (fileName === targetName) {
+      const localSignature = view.getUint32(localHeaderOffset, true);
+
+      if (localSignature !== 0x04034b50) {
+        throw new Error("无法读取 docx：本地文件头异常。");
+      }
+
+      const localFileNameLength = view.getUint16(localHeaderOffset + 26, true);
+      const localExtraLength = view.getUint16(localHeaderOffset + 28, true);
+
+      const dataStart = localHeaderOffset + 30 + localFileNameLength + localExtraLength;
+      const compressedData = bytes.slice(dataStart, dataStart + compressedSize);
+
+      if (compressionMethod === 0) {
+        return compressedData;
+      }
+
+      if (compressionMethod === 8) {
+        return await inflateZipData(compressedData);
+      }
+
+      throw new Error(`不支持的压缩方式：${compressionMethod}`);
+    }
+
+    offset += 46 + fileNameLength + extraLength + commentLength;
+  }
+
+  throw new Error(`没有在 docx 中找到：${targetName}`);
+}
+
+async function extractRowsFromWordFile(file, basePrefix) {
+  const arrayBuffer = await file.arrayBuffer();
+
+  const documentXmlBytes = await readZipEntry(
+    arrayBuffer,
+    "word/document.xml"
+  );
+
+  const documentXml = new TextDecoder("utf-8").decode(documentXmlBytes);
+
+  return parseDocumentXmlToRows(documentXml, basePrefix);
+}
+function setGenerateReady(ready, message) {
+  const generateButton = document.getElementById("generateBtn");
+  const readyStatus = document.getElementById("generateReadyStatus");
+
+  if (generateButton) {
+    generateButton.disabled = !ready;
+  }
+
+  if (readyStatus) {
+    readyStatus.textContent = message || (
+      ready ? "题目数据已准备好。" : "尚未解析题目。"
+    );
+  }
+}
+
+function setGenerationMode(mode) {
+  const isSingle = mode === "single";
+  const isDocument = mode === "document";
+
+  document.getElementById("inputSourceStep").hidden = false;
+  document.getElementById("generationSettings").hidden = false;
+  document.getElementById("advancedSettings").hidden = false;
+  document.getElementById("singleQuestionPanel").hidden = !isSingle;
+  document.getElementById("documentGenerationPanel").hidden = !isDocument;
+  document.getElementById("csvPreviewFold").hidden = !isDocument;
+  document.getElementById("documentGenerateActions").hidden = !isDocument;
+  document.getElementById("workflowIntro").textContent = isSingle
+    ? "单题生成：各项可独立生成，也可一次生成整题。"
+    : "文档生成：上传 Word 后自动解析并批量生成。";
+
+  for (const button of document.querySelectorAll("[data-generation-mode]")) {
+    button.classList.toggle(
+      "active",
+      button.getAttribute("data-generation-mode") === mode
+    );
+  }
+}
+
+for (const button of document.querySelectorAll("[data-generation-mode]")) {
+  button.addEventListener("click", function () {
+    setGenerationMode(button.getAttribute("data-generation-mode"));
+  });
+}
+
+async function extractSelectedWord() {
+  const wordFileInput = document.getElementById("wordFile");
+  const wordBasePrefixInput = document.getElementById("wordBasePrefix");
+  const manualCsvInput = document.getElementById("manualCsv");
+  const status = document.getElementById("wordExtractStatus");
+  const file = wordFileInput.files[0];
+  const basePrefix = wordBasePrefixInput.value.trim();
+
+  if (!file) {
+    status.textContent = "请选择 Word 文档，选择后会自动解析。";
+    setGenerateReady(false, "尚未解析题目。");
+    return;
+  }
+
+  if (!basePrefix) {
+    status.textContent = "请填写命名前缀基础部分，例如 26SUG6W18。";
+    setGenerateReady(false, "等待填写命名前缀。");
+    return;
+  }
+
+  try {
+    status.textContent = "正在读取并解析 Word，请稍等……";
+    setGenerateReady(false, "正在解析题目……");
+
+    const rows = await extractRowsFromWordFile(file, basePrefix);
+
+    if (!rows.length) {
+      status.textContent = "没有提取到题干或选项。请检查 Word 中的题干表格及 A. / B. / C. / D. 格式。";
+      setGenerateReady(false, "没有可生成的题目。");
+      return;
+    }
+
+    const csvText = rowsToCsv(rows);
+    wordExtractedCsvText = csvText;
+    csvTextFromFile = "";
+    manualCsvInput.value = csvText;
+
+    const missingRows = rows.filter(function (row) {
+      return !row.A || !row.B || !row.C || !row.D;
+    });
+    let message = `解析完成：共 ${rows.length} 道题。`;
+
+    if (missingRows.length) {
+      message += ` 其中 ${missingRows.length} 道存在空选项，可展开 CSV 检查。`;
+    }
+
+    status.textContent = message;
+    setGenerateReady(
+      true,
+      missingRows.length
+        ? `已解析 ${rows.length} 道题，建议先检查空选项。`
+        : `已解析 ${rows.length} 道题，可以生成。`
+    );
+  } catch (error) {
+    console.error(error);
+    status.textContent = "解析失败：" + error.message;
+    setGenerateReady(false, "Word 解析失败。");
+  }
+}
+
+const wordFileInput = document.getElementById("wordFile");
+const wordBasePrefixInput = document.getElementById("wordBasePrefix");
+
+if (wordFileInput) {
+  wordFileInput.addEventListener("change", function () {
+    const file = wordFileInput.files[0];
+
+    if (file) {
+      wordBasePrefixInput.value = file.name.replace(/\.docx$/i, "").trim();
+    }
+
+    extractSelectedWord();
+  });
+}
+
+if (wordBasePrefixInput) {
+  wordBasePrefixInput.addEventListener("change", function () {
+    if (wordFileInput && wordFileInput.files[0]) {
+      extractSelectedWord();
+    }
+  });
+}
+
+const quickFieldIds = {
+  Question: "quickQuestion",
+  A: "quickOptionA",
+  B: "quickOptionB",
+  C: "quickOptionC",
+  D: "quickOptionD",
+  Lightbulb: "quickLightbulb",
+  NegativeFeedback: "quickNegativeFeedback"
+};
+
+const optionWidthModeInput = document.getElementById("optionWidthMode");
+const optionWidthInput = document.getElementById("optionWidth");
+
+function updateOptionWidthControl() {
+  optionWidthInput.disabled = optionWidthModeInput.value !== "manual";
+}
+
+optionWidthModeInput.addEventListener("change", updateOptionWidthControl);
+updateOptionWidthControl();
+
+function buildQuickQuestionRow(onlyField) {
+  const row = {
+    NamePrefix: "",
+    QuestionType: "",
+    Question: "",
+    A: "",
+    B: "",
+    C: "",
+    D: "",
+    Lightbulb: "",
+    NegativeFeedback: ""
+  };
+
+  for (const field of Object.keys(quickFieldIds)) {
+    if (!onlyField || field === onlyField) {
+      row[field] = document.getElementById(quickFieldIds[field]).value.trim();
+    }
+  }
+
+  return addItalicMetadataToRow(row);
+}
+
+function buildGenerationPayload(csvText, imageRows, omitNamePrefix) {
+  return {
+    type: "generate-options",
+    csvText,
+    imageRows: imageRows || [],
+    namePrefix: omitNamePrefix
+      ? ""
+      : document.getElementById("namePrefix").value.trim(),
+    columns: Number(document.getElementById("columns").value),
+    limitRows: Number(document.getElementById("limitRows").value),
+    optionWidthMode: document.getElementById("optionWidthMode").value,
+    optionWidth: Number(document.getElementById("optionWidth").value),
+    optionHeight: Number(document.getElementById("optionHeight").value),
+    gapX: Number(document.getElementById("gapX").value),
+    gapY: Number(document.getElementById("gapY").value),
+    fontSize: Number(document.getElementById("fontSize").value),
+    parenthesisBlankSize: Number(document.getElementById("parenthesisBlankSize").value),
+    groupGap: Number(document.getElementById("groupGap").value),
+    fontFamily: document.getElementById("fontFamily").value.trim(),
+    badgeStyle: document.getElementById("badgeStyle").value,
+    questionBackground: document.getElementById("questionBackground").checked
+      ? "with"
+      : "none"
+  };
+}
+
+function generateQuickField(onlyField) {
+  const status = document.getElementById("quickGenerateStatus");
+  const row = buildQuickQuestionRow(onlyField);
+  const hasContent = [
+    row.Question,
+    row.A,
+    row.B,
+    row.C,
+    row.D,
+    row.Lightbulb,
+    row.NegativeFeedback
+  ].some(Boolean);
+  const fieldLabels = {
+    Question: "题干",
+    A: "选项 A",
+    B: "选项 B",
+    C: "选项 C",
+    D: "选项 D",
+    Lightbulb: "小灯泡",
+    NegativeFeedback: "负反馈"
+  };
+
+  if (!hasContent) {
+    status.textContent = onlyField ? `请先填写${fieldLabels[onlyField]}。` : "请至少填写一项内容。";
+    return;
+  }
+
+  parent.postMessage({
+    pluginMessage: buildGenerationPayload(rowsToCsv([row]), [], true)
+  }, "*");
+  status.textContent = onlyField
+    ? `正在生成${fieldLabels[onlyField]}……`
+    : "正在生成整题……";
+}
+
+for (const button of document.querySelectorAll("[data-quick-generate]")) {
+  button.addEventListener("click", function () {
+    generateQuickField(button.getAttribute("data-quick-generate"));
+  });
+}
+
+document.getElementById("generateQuickQuestionBtn").addEventListener("click", function () {
+  generateQuickField("");
+});
+
+const extractFeishuButton = document.getElementById("extractFeishuBtn");
+
+if (extractFeishuButton) {
+  extractFeishuButton.addEventListener("click", async function () {
+    const feishuDocUrlInput = document.getElementById("feishuDocUrl");
+    const feishuBasePrefixInput = document.getElementById("feishuBasePrefix");
+    const feishuAppIdInput = document.getElementById("feishuAppId");
+    const feishuAppSecretInput = document.getElementById("feishuAppSecret");
+    const manualCsvInput = document.getElementById("manualCsv");
+    const status = document.getElementById("feishuExtractStatus");
+
+    const feishuDocUrl = feishuDocUrlInput.value.trim();
+    const basePrefix = feishuBasePrefixInput.value.trim();
+    const appId = feishuAppIdInput.value.trim();
+    const appSecret = feishuAppSecretInput.value.trim();
+
+    if (!feishuDocUrl) {
+      status.textContent = "请先粘贴飞书文档链接。";
+      return;
+    }
+
+    if (!basePrefix) {
+      status.textContent = "请填写飞书命名前缀基础部分，例如 26SUG6W18。";
+      return;
+    }
+
+    if (!appId || !appSecret) {
+      status.textContent = "请填写飞书 App ID 和 App Secret。";
+      return;
+    }
+
+    try {
+      status.textContent = "正在读取飞书表格并提取题干、选项、小灯泡和负反馈，请稍等……";
+
+      const blocks = await fetchFeishuDocumentBlocksDirect(
+        feishuDocUrl,
+        appId,
+        appSecret
+      );
+
+      let rows = parseFeishuBlocksToRows(blocks, basePrefix);
+
+      if (!rows.length) {
+        const rawText = await fetchFeishuRawContentDirect(
+          feishuDocUrl,
+          appId,
+          appSecret
+        );
+        rows = parseFeishuRawTextToRows(rawText || "", basePrefix);
+      }
+
+      if (!rows.length) {
+        status.textContent = "没有提取到题目数据。请检查表头是否包含题干和答案。";
+        return;
+      }
+
+      const csvText = rowsToCsv(rows);
+
+      wordExtractedCsvText = csvText;
+
+      if (typeof csvTextFromFile !== "undefined") {
+        csvTextFromFile = csvText;
+      }
+
+      manualCsvInput.value = csvText;
+
+      const missingRows = rows.filter(function (row) {
+        return !row.A || !row.B || !row.C || !row.D;
+      });
+
+      const lightbulbCount = rows.reduce(function (sum, row) {
+        return sum + splitNumberedContent(row.Lightbulb).length;
+      }, 0);
+      const negativeFeedbackCount = rows.reduce(function (sum, row) {
+        return sum + splitNumberedContent(row.NegativeFeedback).length;
+      }, 0);
+      let message = `飞书提取完成：共 ${rows.length} 道题、${lightbulbCount} 个小灯泡、${negativeFeedbackCount} 个负反馈。内容已填入下方 CSV 预览框。`;
+
+      if (missingRows.length) {
+        message += ` 其中 ${missingRows.length} 组存在空选项，请检查。`;
+      }
+
+      status.textContent = message;
+      setGenerateReady(
+        true,
+        `已从飞书解析 ${rows.length} 道题，可以生成。`
+      );
+    } catch (error) {
+      console.error(error);
+      status.textContent = "飞书提取失败：" + error.message;
+      setGenerateReady(false, "飞书文档解析失败。");
+    }
+  });
+}
+    let csvTextFromFile = "";
+
+const csvFileInput = document.getElementById("csvFile");
+
+if (csvFileInput) {
+  csvFileInput.addEventListener("change", function () {
+    const file = csvFileInput.files[0];
+
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = function (event) {
+      csvTextFromFile = event.target.result;
+      wordExtractedCsvText = "";
+      document.getElementById("manualCsv").value = csvTextFromFile;
+      setGenerateReady(true, "已导入 CSV，可以生成。");
+    };
+
+    reader.readAsText(file, "UTF-8");
+  });
+}
+
+const manualCsvInput = document.getElementById("manualCsv");
+
+if (manualCsvInput) {
+  manualCsvInput.addEventListener("input", function () {
+    const hasContent = manualCsvInput.value.trim().length > 0;
+    setGenerateReady(
+      hasContent,
+      hasContent ? "CSV 内容已更新，可以生成。" : "尚未解析题目。"
+    );
+  });
+}
+    const imageFilesInput = document.getElementById("imageFiles");
+    const imageFolderInput = document.getElementById("imageFolder");
+    const imageStatus = document.getElementById("imageStatus");
+
+    function getSelectedImageFiles() {
+      const files1 = Array.from(imageFilesInput.files || []);
+      const files2 = Array.from(imageFolderInput.files || []);
+      return files1.concat(files2);
+    }
+
+    function updateImageStatus() {
+      const files = getSelectedImageFiles();
+      if (files.length === 0) {
+        imageStatus.textContent = "尚未选择图片。";
+        return;
+      }
+
+      const groups = groupImageFiles(files);
+
+      imageStatus.textContent =
+        `已选择 ${files.length} 张图片，识别到 ${groups.length} 组选项。`;
+    }
+
+    imageFilesInput.addEventListener("change", updateImageStatus);
+    imageFolderInput.addEventListener("change", updateImageStatus);
+
+    function parseImageFileName(file) {
+      const rawName = file.name;
+      const nameWithoutExt = rawName.replace(/\.[^/.]+$/, "");
+
+      // 支持：001_A、001-A
+      let match = nameWithoutExt.match(/^(.+?)[_-]([ABCD])$/i);
+      if (match) {
+        return {
+          groupId: match[1],
+          key: match[2].toUpperCase()
+        };
+      }
+
+      // 支持：A_001、A-001
+      match = nameWithoutExt.match(/^([ABCD])[_-](.+)$/i);
+      if (match) {
+        return {
+          groupId: match[2],
+          key: match[1].toUpperCase()
+        };
+      }
+
+      // 支持：A、B、C、D 单组图片
+      match = nameWithoutExt.match(/^([ABCD])$/i);
+      if (match) {
+        return {
+          groupId: "001",
+          key: match[1].toUpperCase()
+        };
+      }
+
+      return null;
+    }
+
+    function naturalCompare(a, b) {
+      return a.localeCompare(b, undefined, {
+        numeric: true,
+        sensitivity: "base"
+      });
+    }
+
+    function groupImageFiles(files) {
+      const map = {};
+
+      for (const file of files) {
+        const parsed = parseImageFileName(file);
+        if (!parsed) continue;
+
+        if (!map[parsed.groupId]) {
+          map[parsed.groupId] = {
+            groupId: parsed.groupId,
+            files: {}
+          };
+        }
+
+        map[parsed.groupId].files[parsed.key] = file;
+      }
+
+      return Object.values(map).sort((a, b) => {
+        return naturalCompare(a.groupId, b.groupId);
+      });
+    }
+
+    async function fileToByteArray(file) {
+      if (!file) return null;
+      const buffer = await file.arrayBuffer();
+      return Array.from(new Uint8Array(buffer));
+    }
+
+    function buildSequentialPrefix(basePrefix, index) {
+  const cleanPrefix = (basePrefix || "").trim();
+
+  if (!cleanPrefix) {
+    return "";
+  }
+
+  // 如果统一前缀类似 26SUG1W1D1P1-1
+  // 第 1 组：26SUG1W1D1P1-1
+  // 第 2 组：26SUG1W1D1P1-2
+  // 第 3 组：26SUG1W1D1P1-3
+  const match = cleanPrefix.match(/^(.*?)-(\d+)$/);
+
+  if (match) {
+    const prefixHead = match[1];
+    const startNumber = Number(match[2]);
+
+    return `${prefixHead}-${startNumber + index}`;
+  }
+
+  // 如果统一前缀没有 -数字，就自动追加 -1、-2、-3
+  return `${cleanPrefix}-${index + 1}`;
+}
+
+async function buildImageRows() {
+  const files = getSelectedImageFiles();
+  const groups = groupImageFiles(files);
+
+  const unifiedPrefixInput = document.getElementById("namePrefix");
+  const unifiedPrefix = unifiedPrefixInput
+    ? unifiedPrefixInput.value.trim()
+    : "";
+
+  const imageRows = [];
+
+  for (let i = 0; i < groups.length; i++) {
+    const group = groups[i];
+
+    const finalGroupId = unifiedPrefix
+      ? buildSequentialPrefix(unifiedPrefix, i)
+      : group.groupId;
+
+    const row = {
+      groupId: finalGroupId,
+      A: await fileToByteArray(group.files.A),
+      B: await fileToByteArray(group.files.B),
+      C: await fileToByteArray(group.files.C),
+      D: await fileToByteArray(group.files.D)
+    };
+
+    imageRows.push(row);
+  }
+
+  return imageRows;
+}
+    document.getElementById("generateBtn").addEventListener("click", async function () {
+      const manualCsv = document.getElementById("manualCsv").value.trim();
+
+const finalCsvText =
+  manualCsv ||
+  wordExtractedCsvText.trim() ||
+  csvTextFromFile.trim() ||
+  "";
+
+if (!finalCsvText) {
+  setGenerateReady(false, "请先输入题目、上传 Word 或导入 CSV。");
+  return;
+}
+
+let imageRows = [];
+
+if (typeof buildImageRows === "function") {
+  imageRows = await buildImageRows();
+}
+const payload = buildGenerationPayload(finalCsvText, imageRows);
+
+      parent.postMessage(
+        {
+          pluginMessage: payload
+        },
+        "*"
+      );
+    });
+
+    document.getElementById("uploadMortonBtn").addEventListener("click", function () {
+      setMortonResult("");
+
+      const mode = getElement("mortonUploadMode").value;
+
+      if (mode === "create") {
+        startCreateMortonFolder();
+        return;
+      }
+
+      setMortonStatus("正在从 Figma 导出题干、选项、小灯泡和负反馈图层...");
+      startMortonLayerExport();
+    });
+
+    window.onmessage = async function (event) {
+      const msg = event.data && event.data.pluginMessage;
+
+      if (!msg) return;
+
+      if (msg.type === "morton-export-result") {
+        if (!msg.success) {
+          setMortonStatus(msg.error || "导出失败。");
+          return;
+        }
+
+        try {
+          const assets = msg.assets || [];
+          setMortonStatus(`已导出 ${assets.length} 个题干/选项/小灯泡/负反馈图层，准备上传...`);
+          await uploadExportedAssetsToMorton(assets);
+        } catch (error) {
+          setMortonStatus(`上传失败：${error && error.message ? error.message : error}`);
+        }
+        return;
+      }
+
+      if (msg.type === "morton-folder-created") {
+        if (!msg.success) {
+          setMortonStatus(msg.error || "创建莫顿文件夹失败。");
+          return;
+        }
+
+        getElement("mortonParentId").value = msg.folderId || "";
+        setMortonStatus(`已创建文件夹：${msg.folderName}，ID：${msg.folderId}。正在导出全部图层...`);
+        startMortonLayerExport();
+        return;
+      }
+
+      if (msg.type === "morton-register-result") {
+        if (!msg.success) {
+          setMortonStatus(msg.error || "登记莫顿素材失败。");
+          return;
+        }
+
+        const assets = msg.assets || [];
+        const lines = assets.map(function (asset) {
+          const status = asset.confirmed ? "已确认" : "未在列表确认";
+          const url = asset.confirmedUrl || asset.url || "";
+          return `${status} | ${asset.name} -> ${url}`;
+        });
+
+        setMortonStatus(`上传完成：${assets.length} 张素材。`);
+        setMortonResult(lines.join("\n"));
+      }
+    };
+  </script>
+</body>
+</html>

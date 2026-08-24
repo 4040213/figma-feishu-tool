@@ -1,0 +1,15 @@
+{
+  "name": "一键出图-V1,1",
+  "id": "auto-option-group-generator",
+  "api": "1.0.0",
+  "main": "code.js",
+  "ui": "ui.html",
+  "editorType": ["figma"],
+  "networkAccess": {
+    "allowedDomains": [
+      "https://math-thinking.oss-cn-beijing.aliyuncs.com",
+      "https://tms-mx.xueqiulearning.com",
+      "https://open.feishu.cn"
+    ]
+  }
+}
